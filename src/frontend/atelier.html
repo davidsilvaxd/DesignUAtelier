@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>DesignU | Digital Atelier</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="/frontend/styles.css?v=4">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Firebase SDK v9+ (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="/frontend/firebase-config.js"></script>
+    <script src="/frontend/auth.js"></script>
+</head>
+<body class="atelier-mode">
+    <!-- Capas de Fondo Dinámico -->
+    <div class="bg-glow">
+        <div class="glow-1"></div>
+        <div class="glow-2"></div>
+        <div class="glow-3"></div>
+    </div>
+
+    <!-- Contenedor Principal de la App -->
+    <div class="app-container">
+        <!-- Panel Lateral de Chat -->
+        <aside class="side-panel">
+            <div class="panel-header">
+                <div class="header-main">
+                    <a href="/" class="logo-link"><h1>DesignU</h1></a>
+                    <span class="status-badge">Atelier Activo</span>
+                </div>
+                <div id="userProfile" class="user-profile" style="cursor: pointer;" title="Ajustes de Cuenta">
+                    <img id="userPicture" src="" alt="">
+                    <span id="userName">Cargando...</span>
+                    <!-- El botón de salir ahora se maneja vía modal, lo quitamos de aquí para un look más limpio -->
+                </div>
+            </div>
+
+            <div id="messages" class="chat-box">
+                <!-- Los mensajes se cargarán aquí -->
+            </div>
+
+            <div class="chat-input-container">
+                <!-- Preview de imagen flotante -->
+                <div id="imagePreviewContainer" class="image-preview-wrapper" style="display: none;">
+                    <img id="imagePreview" src="" alt="Preview">
+                    <button id="removeImageBtn" class="remove-btn">&times;</button>
+                </div>
+
+                <div class="input-wrapper">
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                    <button id="uploadBtn" class="icon-btn" title="Subir imagen">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    </button>
+                    <input id="input" type="text" placeholder="Describe tu próxima creación..." autocomplete="off">
+                    <button id="sendBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="sidebar-footer">
+                <div class="sign-out-trigger" id="logoutTrigger">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Cerrar Sesión
+                </div>
+            </div>
+        </aside>
+
+        <!-- Escenario Principal del Diseño -->
+        <main class="main-stage">
+            <div class="stage-overlay">
+                <div class="stage-header">
+                    <div class="design-info">
+                        <h2 id="currentDesignTitle">Inicia una conversación para diseñar</h2>
+                        <p id="currentDesignSubtitle">Tu Atelier creativo con IA</p>
+                    </div>
+                </div>
+
+                <!-- Visualizador Principal -->
+                <div class="design-viewport">
+                    <button id="prevNavBtn" class="nav-btn left" disabled aria-label="Anterior">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+                    
+                    <div id="mainPreviewContainer" class="preview-card empty">
+                        <button id="downloadBtn" class="download-action-btn" style="display: none;" title="Descargar Diseño">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Descargar
+                        </button>
+                        <div class="empty-state">
+                            <p>Tus diseños aparecerán aquí en alta resolución</p>
+                        </div>
+                        <img id="mainPreviewImg" style="display: none;">
+                    </div>
+
+                    <button id="nextNavBtn" class="nav-btn right" disabled aria-label="Siguiente">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+
+                <!-- Deck de Galería/Historial -->
+                <div class="history-deck">
+                    <h3>Colección Reciente</h3>
+                    <div id="galleryList" class="gallery-scroll">
+                        <!-- Miniaturas de historial aquí -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Zoom -->
+    <div id="imageModal" class="modal">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="imgExpanded">
+    </div>
+
+    <!-- Modal de Ajustes de Usuario -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Ajustes de Cuenta</h3>
+                <span class="close-settings">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p class="modal-hint">Para cambiar tu correo o contraseña, primero ingresa tu contraseña actual por seguridad.</p>
+                <form id="settingsForm">
+                    <div class="form-group">
+                        <label>Contraseña Actual (Obligatorio)</label>
+                        <input type="password" id="currentPassword" placeholder="••••••••" required>
+                    </div>
+                    <div class="form-divider"></div>
+                    
+                    <!-- Sección de Correo -->
+                    <div class="settings-section">
+                        <label class="section-label">Cambiar Correo Electrónico</label>
+                        <div class="form-group">
+                            <input type="email" id="newEmail" placeholder="Nuevo correo">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="confirmEmail" placeholder="Confirmar nuevo correo">
+                        </div>
+                    </div>
+                    
+                    <div class="form-divider"></div>
+
+                    <!-- Sección de Contraseña -->
+                    <div class="settings-section">
+                        <label class="section-label">Cambiar Contraseña</label>
+                        <div class="form-group">
+                            <input type="password" id="newPassword" placeholder="Nueva contraseña (mín. 6)">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="confirmPassword" placeholder="Confirmar nueva contraseña">
+                        </div>
+                    </div>
+
+                    <p id="settingsMessage" class="auth-message"></p>
+                    <button type="button" class="btn-main-full" onclick="handleUpdateAccount()">Suministrar y Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación de Salida -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-card mini">
+            <h3>¿Cerrar Sesión ahora?</h3>
+            <p>Se perderán los diseños que no hayas descargado en esta sesión.</p>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeLogoutModal()">Cancelar</button>
+                <button class="btn-danger" id="confirmLogoutBtn">Salir de DesignU</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/frontend/main.js"></script>
+</body>
+</html>

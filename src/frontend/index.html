@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>DesignU | Tu Atelier de Moda Digital con IA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/frontend/styles.css">
+    <link rel="stylesheet" href="/frontend/landing.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Firebase SDK v9+ (Compat Mode for simplicity) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="/frontend/firebase-config.js"></script>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="/" class="logo-link"><h1>DesignU</h1></a>
+            </div>
+            <nav class="main-nav">
+                <a href="#features">Características</a>
+                <a href="#about">Acerca de</a>
+                <button class="btn-primary" onclick="scrollToAuth()">Empieza Ahora</button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <span class="badge">Atelier Digital v2.0</span>
+                <h2>Eleva tu Creatividad con la <span class="text-gradient">Moda Sintética</span></h2>
+                <p>El primer taller digital donde tus bocetos e imágenes cobran vida a través de IA de vanguardia. Diseña, mejora y personaliza sin límites.</p>
+                <div class="hero-actions">
+                    <button class="btn-main" onclick="scrollToAuth()">Crear mi primer diseño</button>
+                    <a href="#features" class="btn-link">Ver demostración</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-card c1">Alta Resolución</div>
+                <div class="floating-card c2">Análisis de Visión</div>
+                <div class="main-visual-container">
+                    <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80" alt="Fashion Design">
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="section-title">
+                <h3>Herramientas Profesionales</h3>
+                <p>Todo lo que necesitas para tu proceso creativo en un solo lugar.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="f-icon">🎨</div>
+                    <h4>Atelier Virtual</h4>
+                    <p>Crea diseños desde cero con descripciones en lenguaje natural. Nuestra IA entiende de telas, cortes y tendencias.</p>
+                </div>
+                <div class="feature-card highlighted">
+                    <div class="f-icon">👁️</div>
+                    <h4>Visión Visionaria</h4>
+                    <p>Sube o pega una foto de tu ropa. La IA analizará la prenda y te dará sugerencias de mejora o rediseños completos.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="f-icon">📋</div>
+                    <h4>Flujo Dinámico</h4>
+                    <p>Pega imágenes directamente desde tu portapapeles y observa el cambio instantáneo. Sin esperas, sin fricción.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="auth" class="auth-section">
+            <div class="auth-container">
+                <div class="auth-info">
+                    <h3>Únete al Futuro de la Moda</h3>
+                    <p>Registrate hoy y obtén acceso completo a nuestras herramientas de diseño multimodal.</p>
+                    <ul class="auth-benefits">
+                        <li>- Generación ilimitada de prendas</li>
+                        <li>- Historial de diseños en alta definición</li>
+                        <li>- Acceso anticipado a nuevos modelos de IA</li>
+                    </ul>
+                </div>
+                <div class="auth-box">
+                    <h4>Inicia sesión o Regístrate</h4>
+                    <p>Acceso directo y seguro con tu cuenta de Google</p>
+                    
+                    <div class="google-auth-wrapper">
+                        <button class="btn-google" onclick="signInWithGoogle()">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                            Entrar con Google
+                        </button>
+                    </div>
+
+                    <div class="divider"><span>o usa tu correo</span></div>
+
+                    <form id="authForm" class="simple-form">
+                        <input type="email" id="email" placeholder="Correo electrónico" required>
+                        <input type="password" id="password" placeholder="Contraseña (mín. 6 caracteres)" required>
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" onclick="handleAuthAction('login')">Entrar</button>
+                            <button type="button" class="btn-main-small" onclick="handleAuthAction('register')">Crear Cuenta</button>
+                        </div>
+                    </form>
+                    <p id="authMessage" class="auth-message"></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-bottom">
+            <p>&copy; 2026 DesignU Atelier. Todos los derechos reservados.</p>
+            <div class="footer-links">
+                <a href="#">Privacidad</a>
+                <a href="#">Términos</a>
+                <a href="#">Contacto</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/frontend/auth.js"></script>
+    <script>
+        function scrollToAuth() {
+            document.getElementById('auth').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
