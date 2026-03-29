@@ -8,12 +8,24 @@
   ],
   "routes": [
     {
-      "src": "/frontend/(.*)",
-      "dest": "src/frontend/$1"
+      "src": "/chat",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/generate-image",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/",
+      "dest": "/src/frontend/index.html"
+    },
+    {
+      "src": "/atelier",
+      "dest": "/src/frontend/atelier.html"
     },
     {
       "src": "/(.*)",
-      "dest": "api/index.py"
+      "dest": "/src/frontend/$1"
     }
   ]
 }

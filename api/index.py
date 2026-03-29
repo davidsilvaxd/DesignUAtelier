@@ -1,6 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, Form
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import StreamingResponse, FileResponse
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import groq
@@ -26,13 +25,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Ruta a frontend (ajustada para Vercel)
-# La carpeta frontend está en ../src/frontend respecto a este archivo (api/index.py)
-frontend_path = os.path.join(os.path.dirname(__file__), "..", "src", "frontend")
-
-if os.path.exists(frontend_path):
-    app.mount("/frontend", StaticFiles(directory=frontend_path), name="frontend")
 
 class Message(BaseModel):
     text: str
@@ -99,14 +91,6 @@ CUANDO AYUDES CON DISEÑO:
 RECUERDA: Formatea SIEMPRE tus respuestas siguiendo el ejemplo anterior."""
     }
 ]
-
-@app.get("/")
-def landing():
-    return FileResponse(os.path.join(frontend_path, "index.html"))
-
-@app.get("/atelier")
-def atelier():
-    return FileResponse(os.path.join(frontend_path, "atelier.html"))
 
 @app.post("/chat")
 async def chat(text: str = Form(...), image: UploadFile = File(None)):
