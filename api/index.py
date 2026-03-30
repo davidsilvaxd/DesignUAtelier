@@ -10,8 +10,8 @@ import base64
 
 # Configuración de API Keys (Vercel lee estas de Environment Variables)
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-HF_API_KEY = os.environ.get("HF_API_KEY")
-hf_model = "black-forest-labs/FLUX.1-schnell"
+POLLINATIONS_API_KEY = os.environ.get("POLLINATIONS_API_KEY")
+
 
 client = None
 if GROQ_API_KEY:
@@ -130,17 +130,19 @@ async def chat(text: str = Form(...), image: UploadFile = File(None)):
 
 @app.get("/generate-image")
 def generate_image(prompt: str):
-    if not HF_API_KEY:
-        return {"error": "HF_API_KEY no configurada."}, 401
+    import urllib.parse
+    headers = {}
+    if POLLINATIONS_API_KEY:
+        headers["Authorization"] = f"Bearer {POLLINATIONS_API_KEY}"
         
-    headers = {"Authorization": f"Bearer {HF_API_KEY}"}
-    API_URL = f"https://router.huggingface.co/hf-inference/models/{hf_model}"
+    encoded_prompt = urllib.parse.quote(prompt)
+    API_URL = f"https://image.pollinations.ai/prompt/{encoded_prompt}?nologo=true"
     
     try:
-        response = requests.post(API_URL, headers=headers, json={"inputs": prompt})
+        response = requests.get(API_URL, headers=headers)
         
         if response.status_code != 200:
-            return {"error": "HF API error", "details": response.text}, response.status_code
+            return {"error": "Pollinations API error", "details": response.text}, response.status_code
             
         return StreamingResponse(io.BytesIO(response.content), media_type="image/jpeg")
     except Exception as e:

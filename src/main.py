@@ -15,9 +15,8 @@ print("API KEY:", os.getenv("GROQ_API_KEY"))
 
 
 client = groq.Groq(api_key=os.getenv("GROQ_API_KEY"))
-hf_api_key = os.getenv("HF_API_KEY") or ""
-hf_model = "black-forest-labs/FLUX.1-schnell" # Model to use
-print(f"DEBUG: HF API KEY starts with: {hf_api_key[:5]}")
+pollinations_api_key = os.getenv("POLLINATIONS_API_KEY") or ""
+print(f"DEBUG: POLLINATIONS API KEY starts with: {pollinations_api_key[:5] if pollinations_api_key else 'None'}")
 
 app = FastAPI()
 
@@ -142,15 +141,20 @@ async def chat(text: str = Form(...), image: UploadFile = File(None)):
 
 @app.get("/generate-image")
 def generate_image(prompt: str):
-    headers = {"Authorization": f"Bearer {hf_api_key}"}
-    API_URL = f"https://router.huggingface.co/hf-inference/models/{hf_model}"
+    import urllib.parse
+    headers = {}
+    if pollinations_api_key:
+        headers["Authorization"] = f"Bearer {pollinations_api_key}"
+        
+    encoded_prompt = urllib.parse.quote(prompt)
+    API_URL = f"https://image.pollinations.ai/prompt/{encoded_prompt}?nologo=true"
     
     try:
-        response = requests.post(API_URL, headers=headers, json={"inputs": prompt})
+        response = requests.get(API_URL, headers=headers)
         
-        # If still loading, wait or return error (HF often returns 503 while loading)
+        # If error from pollinations
         if response.status_code != 200:
-            return {"error": "HF API error", "details": response.text}, response.status_code
+            return {"error": "Pollinations API error", "details": response.text}, response.status_code
             
         return StreamingResponse(io.BytesIO(response.content), media_type="image/jpeg")
     except Exception as e:
