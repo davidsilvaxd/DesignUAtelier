@@ -14,12 +14,14 @@ body {
     padding: 0;
     font-family: "Outfit", "Segoe UI", Arial, sans-serif;
     background: radial-gradient(circle at center, #1b1130 0%, #060608 100%);
+    min-height: 100vh;
     min-height: 100dvh;
     color: var(--text-primary);
     overflow-x: hidden;
 }
 
 body.atelier-mode {
+    height: 100vh;
     height: 100dvh;
     overflow: hidden;
 }
@@ -56,6 +58,7 @@ body.atelier-mode {
 .app-container {
     display: flex;
     width: 100vw;
+    height: 100vh;
     height: 100dvh;
     position: relative;
     z-index: 1;
@@ -665,15 +668,23 @@ body.atelier-mode {
 
 /* MODALS & SETTINGS */
 .modal-card {
-    background: rgba(15, 15, 20, 0.9);
+    background: rgba(15, 15, 20, 0.95);
     backdrop-filter: blur(25px);
     border: 1px solid var(--glass-border);
     border-radius: 24px;
     padding: 30px;
     width: 400px;
     max-width: 90%;
+    max-height: 85dvh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
     animation: revealIn 0.4s ease;
+    box-sizing: border-box;
 }
+
+.modal-card::-webkit-scrollbar { width: 5px; }
+.modal-card::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
 
 .modal-card.mini {
     width: 320px;
@@ -702,6 +713,7 @@ body.atelier-mode {
     border: 1px solid var(--glass-border); 
     border-radius: 10px; 
     color: white;
+    box-sizing: border-box;
 }
 
 .form-divider { height: 1px; background: var(--glass-border); margin: 20px 0; }
@@ -733,6 +745,7 @@ body.atelier-mode {
     font-weight: 600; 
     cursor: pointer;
     margin-top: 10px; 
+    box-sizing: border-box;
 }
 
 .modal-footer { display: flex; gap: 10px; margin-top: 25px; }
@@ -749,6 +762,31 @@ body.atelier-mode {
 }
 
 .btn-secondary { flex: 1; padding: 12px; background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--glass-border); border-radius: 10px; cursor: pointer; }
+
+/* Nuevo Botón de Logout dentro de Ajustes */
+.btn-logout-modal {
+    width: 100%;
+    padding: 14px;
+    background: rgba(239, 68, 68, 0.05);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 30px; /* Separación marcada de las otras opciones */
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 48px; /* Táctil de Apple Guidelines para mobile */
+    box-sizing: border-box;
+}
+
+.btn-logout-modal:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #ef4444;
+}
 
 /* SIDEBAR FOOTER ACTION */
 .sidebar-footer {

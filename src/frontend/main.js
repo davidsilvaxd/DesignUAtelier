@@ -384,11 +384,25 @@ closeSettings.addEventListener("click", () => {
     settingsModal.classList.remove("active");
 });
 
-// Abrir confirmación de logout
-logoutTrigger.addEventListener("click", () => {
-    logoutModal.style.display = "flex";
-    logoutModal.classList.add("active");
-});
+// Abrir confirmación de logout desde el menú del usuario en header
+if (logoutTrigger) {
+    logoutTrigger.addEventListener("click", () => {
+        logoutModal.style.display = "flex";
+        logoutModal.classList.add("active");
+    });
+}
+
+// Abrir confirmación de logout desde ADENTRO de los ajustes
+const modalLogoutBtn = document.getElementById("modalLogoutBtn");
+if (modalLogoutBtn) {
+    modalLogoutBtn.addEventListener("click", () => {
+        settingsModal.style.display = "none";
+        settingsModal.classList.remove("active");
+        
+        logoutModal.style.display = "flex";
+        logoutModal.classList.add("active");
+    });
+}
 
 // Cerrar confirmación de logout
 function closeLogoutModal() {
