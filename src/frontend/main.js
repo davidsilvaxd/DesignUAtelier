@@ -12,6 +12,8 @@ const downloadBtn = document.getElementById("downloadBtn");
 const currentDesignTitle = document.getElementById("currentDesignTitle");
 const currentDesignSubtitle = document.getElementById("currentDesignSubtitle");
 const galleryList = document.getElementById("galleryList");
+const appContainer = document.querySelector(".app-container");
+const closeViewerBtn = document.getElementById("closeViewerBtn");
 
 // Elementos de Navegación
 const prevNavBtn = document.getElementById("prevNavBtn");
@@ -193,6 +195,25 @@ function displayAtIndex(index) {
     currentDesignSubtitle.innerText = `Diseño #${designHistory.length - index} del Atelier`;
 
     updateNavButtons();
+    
+    // Activar visor móvil (Expansión)
+    if (appContainer) appContainer.classList.add('viewer-open');
+}
+
+// Evento para el botón de cerrar visor (solo móvil)
+if (closeViewerBtn) {
+    closeViewerBtn.addEventListener('click', () => {
+        if (appContainer) appContainer.classList.remove('viewer-open');
+    });
+}
+
+// Cerramos el visor móvil forzosamente si el usuario va a escribir (abriendo teclado)
+if (input) {
+    input.addEventListener('focus', () => {
+        if (window.innerWidth <= 800 && appContainer) {
+            appContainer.classList.remove('viewer-open');
+        }
+    });
 }
 
 function addToHistory(url, title) {
