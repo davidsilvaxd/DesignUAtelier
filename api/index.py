@@ -12,7 +12,6 @@ import base64
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 POLLINATIONS_API_KEY = os.environ.get("POLLINATIONS_API_KEY")
 
-
 client = None
 if GROQ_API_KEY:
     client = groq.Groq(api_key=GROQ_API_KEY)
@@ -44,9 +43,9 @@ RESTRICCIONES IMPORTANTES:
 GENERACIÓN DE IMÁGENES:
 - Si tu respuesta describe un diseño de moda o prenda específica, DEBES incluir una imagen al final de tu respuesta.
 - EL FORMATO DEBE SER EXACTAMENTE ASÍ (sin bloques de código):
-- ![Diseño](/generate-image?prompt={descripcion_en_ingles}&title={descripcion_en_español})
-- Reemplaza {descripcion_en_ingles} por una descripción corta del diseño EN INGLÉS.
-- Reemplaza {descripcion_en_español} por el título corto del diseño EN EL IDIOMA DE LA CONVERSACIÓN (usualmente español), usando guiones bajos en lugar de espacios.
+- ![Diseño](/generate-image?prompt={descripcion_en_ingles}&title={titulo_en_idioma_del_chat})
+- Reemplaza {descripcion_en_ingles} por una descripción corta del diseño EN INGLÉS. ¡MUY IMPORTANTE!: Usa guiones bajos (_) en lugar de espacios para que el link no se rompa (ej: red_elegant_dress).
+- Reemplaza {titulo_en_idioma_del_chat} por el título corto del diseño SIEMPRE EN EL MISMO IDIOMA en el que el usuario está escribiendo. Si el usuario escribe en inglés, el título va en inglés. Si escribe en francés, en francés. Usa guiones bajos en lugar de espacios.
 - **REGLAS CRÍTICAS PARA EL PROMPT DE IMAGEN (SIEMPRE EN INGLÉS):** 
     1. DEBE ser un "Flat lay" o "Ghost mannequin" product shot.
     2. ESTÁ ABSOLUTAMENTE PROHIBIDO incluir personas, modelos, caras, manos o cualquier parte del cuerpo humano.
@@ -79,7 +78,7 @@ EJEMPLO DE RESPUESTA BIEN FORMATEADA:
 
 *Perfecto para eventos formales y cócteles*
 
-![Diseño](/generate-image?prompt=elegant_red_velvet_evening_gown_midi_length_long_sleeves_high_quality)
+![Diseño](/generate-image?prompt=elegant_red_velvet_evening_gown_midi_length_long_sleeves_high_quality&title=Vestido_Rojo_Elegante)
 
 CUANDO AYUDES CON DISEÑO:
 - Detalla colores, telas, materiales y texturas usando **negrita**
@@ -136,7 +135,9 @@ def generate_image(prompt: str):
         headers["Authorization"] = f"Bearer {POLLINATIONS_API_KEY}"
         
     encoded_prompt = urllib.parse.quote(prompt)
-    API_URL = f"https://image.pollinations.ai/prompt/{encoded_prompt}?nologo=true"
+    # Aplicar optimizaciones de velocidad:
+    # enhance=false evita que Pollinations pase el prompt por GPT para reescribirlo
+    API_URL = f"https://image.pollinations.ai/prompt/{encoded_prompt}?nologo=true&enhance=false&width=800&height=800&model=flux"
     
     try:
         response = requests.get(API_URL, headers=headers)
