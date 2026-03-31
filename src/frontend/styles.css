@@ -88,8 +88,23 @@ body.atelier-mode {
 
 .logo-link {
     text-decoration: none;
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     color: var(--accent-primary);
+}
+
+.brand-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.6));
+    transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.logo-link:hover .brand-logo {
+    filter: drop-shadow(0 0 14px rgba(168, 85, 247, 0.9));
+    transform: scale(1.08);
 }
 
 .user-profile {
@@ -575,7 +590,8 @@ body.atelier-mode {
     
     /* Header Fixes */
     .header-main { display: flex; align-items: center; gap: 10px; }
-    .logo-link h1 { font-size: 20px; margin: 0; line-height: 1; }
+    .logo-link h1 { font-size: 18px; margin: 0; line-height: 1; }
+    .brand-logo { width: 34px; height: 34px; }
     .status-badge { font-size: 9px; padding: 2px 5px; }
     .user-profile img { width: 26px; height: 26px; }
     .user-profile span { max-width: 60px; font-size: 11px; }
