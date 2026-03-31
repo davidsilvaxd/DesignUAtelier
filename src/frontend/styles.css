@@ -89,6 +89,7 @@ body.atelier-mode {
 .logo-link {
     text-decoration: none;
     display: block;
+    color: var(--accent-primary);
 }
 
 .user-profile {
