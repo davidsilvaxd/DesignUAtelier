@@ -26,6 +26,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Middleware para evitar el caché en archivos estáticos localmente
+@app.middleware("http")
+async def no_cache_middleware(request, call_next):
+    response = await call_next(request)
+    # Forzamos la actualización en rutas de frontend para ver cambios al instante
+    if request.url.path.startswith("/frontend") or request.url.path in ("/", "/atelier"):
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
+
 # Ruta a frontend
 frontend_path = os.path.join(os.path.dirname(__file__), "frontend")
 app.mount("/frontend", StaticFiles(directory=frontend_path), name="frontend")
@@ -52,11 +63,11 @@ GENERACIÓN DE IMÁGENES:
 - Reemplaza {descripcion_en_ingles} por una descripción corta del diseño EN INGLÉS. ¡MUY IMPORTANTE!: Usa guiones bajos (_) en lugar de espacios para que el link no se rompa (ej: red_elegant_dress).
 - Reemplaza {titulo_en_idioma_del_chat} por el título corto del diseño SIEMPRE EN EL MISMO IDIOMA en el que el usuario está escribiendo. Si el usuario escribe en inglés, el título va en inglés. Si escribe en francés, en francés. Usa guiones bajos en lugar de espacios.
 - **REGLAS CRÍTICAS PARA EL PROMPT DE IMAGEN (SIEMPRE EN INGLÉS):** 
-    1. DEBE ser un "Flat lay" o "Ghost mannequin" product shot.
-    2. ESTÁ ABSOLUTAMENTE PROHIBIDO incluir personas, modelos, caras, manos o cualquier parte del cuerpo humano.
-    3. El fondo DEBE ser blanco sólido o gris neutro minimalista.
-    4. La prenda DEBE mostrarse completa y centrada.
-    5. Usa palabras clave como: "no human", "clothing only", "isolated on white background", "professional product photography".
+    1. DEBE ser exclusivamente de la prenda. No se permiten humanos.
+    2. ESTÁ TERMINANTEMENTE PROHIBIDO incluir personas, modelos, maniquíes con rasgos humanos, caras, manos, piel, cabello o cualquier parte del cuerpo humano.
+    3. El estilo DEBE ser "Flat lay" (prenda extendida sobre superficie) o "Ghost mannequin" (prenda con volumen pero sin modelo visible).
+    4. El fondo DEBE ser blanco sólido o gris neutro minimalista.
+    5. Usa verbos como "product shot of", "hanging", "folded", "displayed". NUNCA uses "wearing", "modeling" o "on a person".
 - NUNCA pongas la URL dentro de un bloque de código.
 - Asegúrate de que el prompt sea en INGLÉS.
 
@@ -145,9 +156,13 @@ def generate_image(prompt: str):
     if pollinations_api_key:
         headers["Authorization"] = f"Bearer {pollinations_api_key}"
         
-    encoded_prompt = urllib.parse.quote(prompt)
+    # Capa de seguridad: Forzar exclusión de humanos y estilo product shot
+    safety_suffix = ", isolated on white background, no human, no people, no face, no skin, professional product photography, high quality clothing only, ghost mannequin style"
+    encoded_prompt = urllib.parse.quote(prompt + safety_suffix)
+    
     # Aplicar optimizaciones de velocidad:
-    # enhance=false evita que Pollinations pase el prompt por GPT para reescribirlo
+    # nologo=true quita marcas de agua.
+    # enhance=false evita reescritura de prompt para mantener el control estricto.
     API_URL = f"https://image.pollinations.ai/prompt/{encoded_prompt}?nologo=true&enhance=false&width=800&height=800&model=flux"
     
     try:
@@ -166,8 +181,15 @@ def chrome_devtools():
     return {"error": "Not implemented"}, 404
 
 if __name__ == "__main__":
-    print("Iniciando servidor DesignU...")
     import uvicorn
-    print("Uvicorn importado correctamente")
-    print("Servidor corriendo en http://localhost:8001")
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    import os
+    
+    # Obtener host y puerto de variables de entorno para mayor versatilidad
+    # "localhost" (por defecto) es ideal para desarrollo local.
+    # Usa "0.0.0.0" (vía variable HOST) para escuchar en todas las interfaces.
+    host = os.getenv("HOST", "localhost")
+    port = int(os.getenv("PORT", 8000))
+    
+    print(f"Iniciando servidor DesignU en {host}:{port} con auto-reload...")
+    # Usamos el string "main:app" para permitir 'reload=True'
+    uvicorn.run("main:app", host=host, port=port, reload=True)

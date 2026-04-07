@@ -35,11 +35,15 @@
     <main>
         <section class="hero">
             <div class="hero-content">
-                <span class="badge">Atelier Digital v2.0</span>
+                <span class="badge">100% Gratis • Uso Ilimitado</span>
                 <h2>Eleva tu Creatividad con la <span class="text-gradient">Moda Sintética</span></h2>
-                <p>El primer taller digital donde tus bocetos e imágenes cobran vida a través de IA de vanguardia. Diseña, mejora y personaliza sin límites.</p>
+                <p>El primer taller digital donde tus diseños cobran vida con IA. Sin suscripciones ni compromisos. Crea, mejora y experimenta de forma ilimitada.</p>
                 <div class="hero-actions">
                     <button class="btn-main" onclick="scrollToAuth()">Crear mi primer diseño</button>
+                    <button class="btn-guest" onclick="continueAsGuest()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+                        Probar como Invitado
+                    </button>
                     <a href="#features" class="btn-link">Ver demostración</a>
                 </div>
             </div>
@@ -80,11 +84,11 @@
             <div class="auth-container">
                 <div class="auth-info">
                     <h3>Únete al Futuro de la Moda</h3>
-                    <p>Registrate hoy y obtén acceso completo a nuestras herramientas de diseño multimodal.</p>
+                    <p>Accede de forma totalmente gratuita y sin compromisos a nuestras herramientas profesionales de diseño.</p>
                     <ul class="auth-benefits">
-                        <li>- Generación ilimitada de prendas</li>
-                        <li>- Historial de diseños en alta definición</li>
-                        <li>- Acceso anticipado a nuevos modelos de IA</li>
+                        <li>Generación 100% gratuita e ilimitada</li>
+                        <li>Historial de diseños en alta definición</li>
+                        <li>Acceso anticipado a nuevos modelos de IA</li>
                     </ul>
                 </div>
                 <div class="auth-box">
@@ -102,12 +106,22 @@
 
                     <form id="authForm" class="simple-form">
                         <input type="email" id="email" placeholder="Correo electrónico" required>
-                        <input type="password" id="password" placeholder="Contraseña (mín. 6 caracteres)" required>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" placeholder="Contraseña (mín. 6 caracteres)" required>
+                            <button type="button" class="toggle-password" onclick="togglePasswordVisibility('password')" title="Mostrar/Ocultar contraseña">
+                                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
                         <div class="form-actions">
                             <button type="button" class="btn-secondary" onclick="handleAuthAction('login')">Entrar</button>
                             <button type="button" class="btn-main-small" onclick="handleAuthAction('register')">Crear Cuenta</button>
                         </div>
                     </form>
+                    <div class="guest-access-footer">
+                        <button class="btn-guest-link" onclick="continueAsGuest()">
+                            Probar el Atelier como invitado &rarr;
+                        </button>
+                    </div>
                     <p id="authMessage" class="auth-message"></p>
                 </div>
             </div>

@@ -143,7 +143,12 @@
                 <form id="settingsForm">
                     <div class="form-group">
                         <label>Contraseña Actual (Obligatorio)</label>
-                        <input type="password" id="currentPassword" placeholder="••••••••" required>
+                        <div class="password-wrapper">
+                            <input type="password" id="currentPassword" placeholder="••••••••" required>
+                            <button type="button" class="toggle-password" onclick="togglePasswordVisibility('currentPassword')" title="Mostrar/Ocultar contraseña">
+                                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
                     </div>
                     <div class="form-divider"></div>
                     
@@ -164,10 +169,20 @@
                     <div class="settings-section">
                         <label class="section-label">Cambiar Contraseña</label>
                         <div class="form-group">
-                            <input type="password" id="newPassword" placeholder="Nueva contraseña (mín. 6)">
+                            <div class="password-wrapper">
+                                <input type="password" id="newPassword" placeholder="Nueva contraseña (mín. 6)">
+                                <button type="button" class="toggle-password" onclick="togglePasswordVisibility('newPassword')" title="Mostrar/Ocultar contraseña">
+                                    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </button>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <input type="password" id="confirmPassword" placeholder="Confirmar nueva contraseña">
+                            <div class="password-wrapper">
+                                <input type="password" id="confirmPassword" placeholder="Confirmar nueva contraseña">
+                                <button type="button" class="toggle-password" onclick="togglePasswordVisibility('confirmPassword')" title="Mostrar/Ocultar contraseña">
+                                    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -195,6 +210,53 @@
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeLogoutModal()">Cancelar</button>
                 <button class="btn-danger" id="confirmLogoutBtn">Salir de DesignU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Invitados (Login & Register Prompt) -->
+    <div id="guestModal" class="modal">
+        <div class="modal-card auth-box">
+            <div class="modal-header">
+                <h3>Acceso a DesignU</h3>
+                <span class="close-guest">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p class="modal-hint">Estás en Modo Invitado. Inicia sesión para guardar tus diseños de forma permanente.</p>
+                
+                <!-- Botón de Google Auth -->
+                <div class="google-auth-wrapper">
+                    <button class="btn-google" onclick="signInWithGoogle()">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                        Entrar con Google
+                    </button>
+                </div>
+
+                <div class="divider"><span>o usa tu correo</span></div>
+
+                <!-- Formulario de Email/password -->
+                <form id="authForm" class="simple-form">
+                    <input type="email" id="email" placeholder="Correo electrónico" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" placeholder="Contraseña (mín. 6)" required>
+                        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('password')" title="Mostrar/Ocultar contraseña">
+                            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="handleAuthAction('login')">Entrar</button>
+                        <button type="button" class="btn-main-small" onclick="handleAuthAction('register')">Crear Cuenta</button>
+                    </div>
+                </form>
+                
+                <p id="authMessage" class="auth-message"></p>
+
+                <div class="guest-access-footer">
+                    <button class="btn-guest-link" onclick="closeGuestModal()">
+                        Seguir explorando como invitado &rarr;
+                    </button>
+                </div>
             </div>
         </div>
     </div>

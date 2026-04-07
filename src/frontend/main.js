@@ -243,19 +243,34 @@ function addToHistory(url, title) {
 
 // AUTH & SESSION LOGIC - ATELIER
 document.addEventListener("DOMContentLoaded", () => {
-    const userJson = sessionStorage.getItem("user");
+    let userJson = sessionStorage.getItem("user");
+    
+    // Si no hay sesión, crear una de invitado automáticamente en lugar de redirigir
     if (!userJson) {
-        // Redirigir a landing si no hay sesión
-        window.location.href = "/";
-        return;
+        const guestUser = {
+            id: "guest",
+            name: "Invitado",
+            picture: "https://ui-avatars.com/api/?name=Invitado&background=a855f7&color=fff"
+        };
+        sessionStorage.setItem("user", JSON.stringify(guestUser));
+        userJson = JSON.stringify(guestUser);
     }
 
     const user = JSON.parse(userJson);
     const userNameElem = document.getElementById("userName");
     const userPictureElem = document.getElementById("userPicture");
+    const logoutTrigger = document.getElementById("logoutTrigger");
     
     if (userNameElem) userNameElem.innerText = user.name.split(' ')[0];
     if (userPictureElem) userPictureElem.src = user.picture;
+
+    // Si es invitado, cambiar texto de logout
+    if (user.id === "guest" && logoutTrigger) {
+        logoutTrigger.innerHTML = `
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+            Volver al Inicio
+        `;
+    }
 });
 
 function logout() {
@@ -372,10 +387,16 @@ const logoutModal = document.getElementById("logoutModal");
 const logoutTrigger = document.getElementById("logoutTrigger");
 const confirmLogoutBtn = document.getElementById("confirmLogoutBtn");
 
-// Abrir ajustes
+// Abrir ajustes o modal de invitado
 userProfile.addEventListener("click", () => {
-    settingsModal.style.display = "flex";
-    settingsModal.classList.add("active");
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (user && user.id === "guest") {
+        guestModal.style.display = "flex";
+        guestModal.classList.add("active");
+    } else {
+        settingsModal.style.display = "flex";
+        settingsModal.classList.add("active");
+    }
 });
 
 // Cerrar ajustes
@@ -416,6 +437,30 @@ confirmLogoutBtn.addEventListener("click", () => {
     window.location.href = "/";
 });
 
+// Mensaje para invitados en ajustes
+if (sessionStorage.getItem("user") && JSON.parse(sessionStorage.getItem("user")).id === "guest") {
+    const modalHint = document.querySelector(".modal-hint");
+    if (modalHint) {
+        modalHint.innerHTML = "Estás en <strong>Modo Invitado</strong>. Los cambios de cuenta están deshabilitados. <a href='/' style='color: var(--accent-primary)'>Inicia sesión</a> para personalizar tu perfil.";
+        const settingsForm = document.getElementById("settingsForm");
+        if (settingsForm) settingsForm.style.opacity = "0.5";
+        if (settingsForm) settingsForm.style.pointerEvents = "none";
+    }
+}
+
+// Control del Modal de Invitado
+const guestModal = document.getElementById("guestModal");
+const closeGuest = document.querySelector(".close-guest");
+
+function closeGuestModal() {
+    guestModal.style.display = "none";
+    guestModal.classList.remove("active");
+}
+
+if (closeGuest) {
+    closeGuest.addEventListener("click", closeGuestModal);
+}
+
 // Cerrar modales al hacer clic fuera
 window.addEventListener("click", (e) => {
     if (e.target === settingsModal) {
@@ -425,5 +470,9 @@ window.addEventListener("click", (e) => {
     if (e.target === logoutModal) {
         logoutModal.style.display = "none";
         logoutModal.classList.remove("active");
+    }
+    if (e.target === guestModal) {
+        guestModal.style.display = "none";
+        guestModal.classList.remove("active");
     }
 });
