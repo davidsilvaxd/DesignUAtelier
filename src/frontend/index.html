@@ -24,11 +24,16 @@
                     <h1>DesignU</h1>
                 </a>
             </div>
-            <nav class="main-nav">
-                <a href="#features">Características</a>
-                <a href="#about">Acerca de</a>
+            <nav class="main-nav" id="mainNav">
+                <a href="#auth" onclick="scrollToAuth()">Iniciar Sesión</a>
+                <a href="https://www.instagram.com/gisuxof/" onclick="openInstagram(event)">Contacto</a>
                 <button class="btn-primary" onclick="scrollToAuth()">Empieza Ahora</button>
             </nav>
+            <button class="mobile-menu-toggle" id="menuToggle" aria-label="Abrir menú">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
 
@@ -137,15 +142,48 @@
             <div class="footer-links">
                 <a href="#">Privacidad</a>
                 <a href="#">Términos</a>
-                <a href="#">Contacto</a>
+                <a href="https://www.instagram.com/gisuxof/" onclick="openInstagram(event)">Contacto</a>
             </div>
         </div>
     </footer>
 
     <script src="/frontend/auth.js"></script>
+    <script src="/frontend/mobile_menu.js"></script>
     <script>
         function scrollToAuth() {
-            document.getElementById('auth').scrollIntoView({ behavior: 'smooth' });
+            const authSection = document.getElementById('auth');
+            const nav = document.getElementById('mainNav');
+            const toggle = document.getElementById('menuToggle');
+            
+            // Cerrar menú móvil al hacer click
+            if (nav && nav.classList.contains('active')) {
+                nav.classList.remove('active');
+                toggle.classList.remove('active');
+            }
+            
+            authSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function openInstagram(e) {
+            e.preventDefault();
+            const username = 'gisuxof';
+            const webUrl = `https://www.instagram.com/${username}/`;
+            const appUrl = `instagram://user?username=${username}`;
+            
+            // Detectar si es un dispositivo móvil
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // Intentar abrir la app
+                window.location.href = appUrl;
+                // Fallback web si no tiene la app nativa instalada
+                setTimeout(() => {
+                    window.location.href = webUrl;
+                }, 500);
+            } else {
+                // En escritorio abrir ventana nueva
+                window.open(webUrl, '_blank', 'noopener,noreferrer');
+            }
         }
     </script>
 </body>
