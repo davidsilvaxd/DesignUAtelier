@@ -31,6 +31,14 @@ let selectedFile = null;
 let designHistory = []; // Array de objetos { url, title }
 let currentIndex = -1;
 
+// Memoria de Sesión: ID único para que la IA recuerde la conversación
+let sessionId = sessionStorage.getItem("chat_session_id");
+if (!sessionId) {
+    sessionId = crypto.randomUUID();
+    sessionStorage.setItem("chat_session_id", sessionId);
+}
+console.log("Session ID:", sessionId);
+
 sendBtn.addEventListener("click", sendMessage);
 
 input.addEventListener("keypress", (e) => {
@@ -85,6 +93,7 @@ async function sendMessage() {
     // Preparar FormData
     const formData = new FormData();
     formData.append("text", text || "Analiza esta imagen");
+    formData.append("session_id", sessionId);
     if (selectedFile) {
         formData.append("image", selectedFile);
     }
@@ -104,6 +113,11 @@ async function sendMessage() {
         });
 
         const data = await response.json();
+        // Actualizar session_id si el servidor devuelve uno
+        if (data.session_id) {
+            sessionId = data.session_id;
+            sessionStorage.setItem("chat_session_id", sessionId);
+        }
         removeTypingIndicator(typingIndicator);
         addMessage(data.reply, "bot");
 

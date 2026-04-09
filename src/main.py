@@ -9,6 +9,7 @@ import requests
 import io
 import os
 import base64
+import uuid
 load_dotenv()
 # Cargar variables de entorno
 
@@ -44,11 +45,10 @@ app.mount("/frontend", StaticFiles(directory=frontend_path), name="frontend")
 class Message(BaseModel):
     text: str
 
-# Memoria de conversación
-conversation_history = [
-    {
-        "role": "system",
-        "content": """Eres un diseñador profesional de moda especializado en crear diseños de ropa creativos.
+# Prompt del sistema (se reutiliza en cada sesión nueva)
+SYSTEM_PROMPT = {
+    "role": "system",
+    "content": """Eres un diseñador profesional de moda especializado en crear diseños de ropa creativos.
 
 RESTRICCIONES IMPORTANTES:
 - SOLO debes responder preguntas relacionadas con diseño de moda, ropa, telas, colores, estilos de vestimenta, accesorios de moda y tendencias.
@@ -104,8 +104,18 @@ CUANDO AYUDES CON DISEÑO:
 - **Incluye SIEMPRE la imagen generada al final si hay un diseño.**
 
 RECUERDA: Formatea SIEMPRE tus respuestas siguiendo el ejemplo anterior."""
-    }
-]
+}
+
+# Memoria de conversación POR SESIÓN
+# Cada session_id tiene su propio historial aislado
+session_histories: dict[str, list] = {}
+
+def get_session_history(session_id: str) -> list:
+    """Obtiene o crea el historial de una sesión."""
+    if session_id not in session_histories:
+        session_histories[session_id] = [SYSTEM_PROMPT.copy()]
+        print(f"DEBUG: Nueva sesión creada: {session_id}")
+    return session_histories[session_id]
 
 @app.get("/")
 def landing():
@@ -116,8 +126,15 @@ def atelier():
     return FileResponse(os.path.join(frontend_path, "atelier.html"))
 
 @app.post("/chat")
-async def chat(text: str = Form(...), image: UploadFile = File(None)):
+async def chat(text: str = Form(...), session_id: str = Form(""), image: UploadFile = File(None)):
     try:
+        # Si no se proporcionó session_id, generar uno temporal
+        if not session_id:
+            session_id = str(uuid.uuid4())
+        
+        # Obtener historial de esta sesión específica
+        history = get_session_history(session_id)
+        
         # Mensaje base del usuario
         user_message_content = [{"type": "text", "text": text}]
         
@@ -132,22 +149,39 @@ async def chat(text: str = Form(...), image: UploadFile = File(None)):
                 }
             })
 
-        # Añadir al historial (simplificado para visión)
-        conversation_history.append({"role": "user", "content": user_message_content})
+        # Añadir al historial de ESTA sesión
+        history.append({"role": "user", "content": user_message_content})
+        
+        # Limitar historial para evitar exceder tokens (máx ~20 mensajes + system)
+        MAX_HISTORY = 21  # 1 system + 20 mensajes (10 pares user/assistant)
+        if len(history) > MAX_HISTORY:
+            # Mantener system prompt + los últimos 20 mensajes
+            history[:] = [history[0]] + history[-(MAX_HISTORY - 1):]
 
         response = client.chat.completions.create(
             model="meta-llama/llama-4-scout-17b-16e-instruct",
-            messages=conversation_history
+            messages=history
         )
 
         reply = response.choices[0].message.content
 
-        conversation_history.append({"role": "assistant", "content": reply})
+        history.append({"role": "assistant", "content": reply})
 
-        return {"reply": reply, "hf_using": True}
+        return {"reply": reply, "session_id": session_id}
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return {"reply": f"Error: {str(e)}"}
+
+@app.post("/clear-session")
+async def clear_session(session_id: str = Form("")):
+    """Limpia el historial de una sesión para empezar una conversación nueva."""
+    if session_id and session_id in session_histories:
+        session_histories[session_id] = [SYSTEM_PROMPT.copy()]
+        print(f"DEBUG: Sesión limpiada: {session_id}")
+        return {"status": "ok", "message": "Historial de conversación limpiado"}
+    return {"status": "ok", "message": "No había historial que limpiar"}
 
 @app.get("/generate-image")
 def generate_image(prompt: str):
