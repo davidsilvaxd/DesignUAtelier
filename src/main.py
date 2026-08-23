@@ -228,6 +228,11 @@ def favicon():
         return FileResponse(fav)
     return {"error": "favicon not found"}
 
+@app.get("/health")
+def health():
+    """Health-check para monitores de uptime y verificación del despliegue."""
+    return {"status": "ok"}
+
 @app.post("/chat")
 async def chat(text: str = Form(...), session_id: str = Form(""), image: UploadFile = File(None)):
     try:
