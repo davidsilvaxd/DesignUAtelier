@@ -1,24 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/chat(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/generate-image(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/",
-      "destination": "/src/frontend/index.html"
-    },
-    {
-      "source": "/atelier",
-      "destination": "/src/frontend/atelier.html"
-    },
-    {
       "source": "/(.*)",
-      "destination": "/src/frontend/$1"
+      "destination": "/api/index.py"
     }
   ]
 }

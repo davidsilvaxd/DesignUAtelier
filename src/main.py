@@ -221,6 +221,13 @@ def landing():
 def atelier():
     return FileResponse(os.path.join(frontend_path, "atelier.html"))
 
+@app.get("/favicon.ico")
+def favicon():
+    fav = os.path.join(frontend_path, "logo.png")
+    if os.path.exists(fav):
+        return FileResponse(fav)
+    return {"error": "favicon not found"}
+
 @app.post("/chat")
 async def chat(text: str = Form(...), session_id: str = Form(""), image: UploadFile = File(None)):
     try:
