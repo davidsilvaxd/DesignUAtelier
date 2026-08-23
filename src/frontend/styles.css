@@ -1048,3 +1048,286 @@ body.atelier-mode {
     color: var(--accent-primary);
     background: rgba(168, 85, 247, 0.05);
 }
+
+/* ============================================
+   SISTEMA DE ESTAMPADOS — NUEVOS ESTILOS
+   ============================================ */
+
+/* Preview card en modo camiseta seleccionada (sin clase empty) */
+.preview-card.shirt-mode {
+    width: 380px;
+    height: 480px;
+    border-style: solid;
+}
+
+/* Override del empty-state para el selector de camisetas */
+.preview-card.empty {
+    width: 380px;
+    height: 480px;
+    border-style: dashed;
+}
+
+/* ---- VISTA DE SELECCIÓN DE CAMISETA ---- */
+.shirt-selector-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.shirt-selector-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+    font-weight: 600;
+}
+
+.shirt-display-card {
+    width: 220px;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+}
+
+.shirt-display-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(168,85,247,0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.shirt-display-card:hover::after {
+    opacity: 1;
+}
+
+.shirt-display-img {
+    max-width: 88%;
+    max-height: 88%;
+    object-fit: contain;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.15));
+}
+
+.shirt-display-card:hover .shirt-display-img {
+    transform: scale(1.04) translateY(-3px);
+}
+
+.shirt-display-info {
+    text-align: center;
+}
+
+.shirt-display-info h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+}
+
+.shirt-display-info p {
+    margin: 5px 0 0 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.btn-select-shirt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 26px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 20px rgba(168, 85, 247, 0.35);
+    font-family: inherit;
+}
+
+.btn-select-shirt:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 30px rgba(168, 85, 247, 0.55);
+}
+
+.btn-select-shirt:active {
+    transform: scale(0.97);
+}
+
+.btn-select-shirt svg {
+    flex-shrink: 0;
+}
+
+/* ---- VISTA DE DISEÑO (tras selección) ---- */
+.design-view {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.shirt-stamp-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    transition: transform 0.3s ease;
+}
+
+.shirt-stamp-container:hover {
+    transform: scale(1.01);
+}
+
+.shirt-base-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.12));
+}
+
+.stamp-overlay-img {
+    position: absolute;
+    top: 14%;
+    left: 20%;
+    width: 60%;
+    height: auto;
+    max-height: 52%;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+    transition: opacity 0.6s ease;
+    animation: revealIn 0.8s ease;
+}
+
+.design-hint {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 0;
+    opacity: 0.65;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    animation: fadeInSlide 0.5s ease;
+}
+
+/* ---- BOTÓN CAMBIAR CAMISETA ---- */
+.reset-flow-btn {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 100;
+    padding: 7px 13px;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.65);
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-family: inherit;
+}
+
+.reset-flow-btn:hover {
+    color: white;
+    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ---- MENSAJES DE SISTEMA EN EL CHAT ---- */
+.message.system-message {
+    background: rgba(168, 85, 247, 0.07);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-style: italic;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.system-msg-icon {
+    font-style: normal;
+    flex-shrink: 0;
+}
+
+/* ---- INPUT LOCKEADO (sin camiseta seleccionada) ---- */
+.input-wrapper.locked {
+    opacity: 0.55;
+    border-color: rgba(255, 255, 255, 0.04);
+}
+
+.input-wrapper.locked input {
+    cursor: default;
+}
+
+/* ---- GALERÍA: MINIATURA ACTIVA ---- */
+.gallery-thumb.active {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+    transform: translateY(-4px);
+}
+
+/* ---- RESPONSIVE MOBILE ---- */
+@media (max-width: 800px) {
+    .preview-card.empty,
+    .preview-card.shirt-mode {
+        width: 100%;
+        height: 100%;
+    }
+
+    .shirt-display-card {
+        width: 160px;
+        height: 180px;
+    }
+
+    .shirt-selector-view {
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .btn-select-shirt {
+        padding: 10px 20px;
+        font-size: 12px;
+    }
+
+    .stamp-overlay-img {
+        top: 12%;
+        left: 18%;
+        width: 64%;
+    }
+}

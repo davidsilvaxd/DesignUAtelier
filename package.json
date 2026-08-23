@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "start": ".\\venv\\Scripts\\activate && cd src && uvicorn main:app --reload --host localhost --port 8000",
+    "dev": ".\\venv\\Scripts\\activate && cd src && uvicorn main:app --reload --host localhost --port 8000"
+  },
   "devDependencies": {
     "typescript": "^5.9.3"
   }

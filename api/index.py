@@ -8,8 +8,8 @@ import io
 import os
 import base64
 
-# Configuración de API Keys (Vercel lee estas de Environment Variables)
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GEMINI")
 POLLINATIONS_API_KEY = os.environ.get("POLLINATIONS_API_KEY")
 
 client = None
@@ -115,7 +115,7 @@ async def chat(text: str = Form(...), image: UploadFile = File(None)):
         conversation_history.append({"role": "user", "content": user_message_content})
 
         response = client.chat.completions.create(
-            model="meta-llama/llama-4-scout-17b-16e-instruct",
+            model="openai/gpt-oss-120b",
             messages=conversation_history
         )
 
@@ -134,16 +134,40 @@ def generate_image(prompt: str):
     if POLLINATIONS_API_KEY:
         headers["Authorization"] = f"Bearer {POLLINATIONS_API_KEY}"
         
-    encoded_prompt = urllib.parse.quote(prompt)
-    # Aplicar optimizaciones de velocidad:
-    # enhance=false evita que Pollinations pase el prompt por GPT para reescribirlo
+    # Capa de seguridad por defecto
+    safety_suffix = ", isolated on white background, no human, no people, no face, no skin, professional product photography, high quality clothing only, ghost mannequin style"
+    full_prompt = prompt + safety_suffix
+
+    # Intento con Gemini si la API key está disponible
+    if GEMINI_API_KEY:
+        for gemini_model in ["gemini-2.5-flash-image", "gemini-3.1-flash-image", "gemini-3-pro-image"]:
+            try:
+                gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/{gemini_model}:generateContent?key={GEMINI_API_KEY}"
+                payload = {
+                    "contents": [{"parts": [{"text": full_prompt}]}],
+                    "generationConfig": {"responseModalities": ["IMAGE"]}
+                }
+                gemini_resp = requests.post(gemini_url, json=payload, timeout=20)
+                if gemini_resp.status_code == 200:
+                    data = gemini_resp.json()
+                    parts = data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
+                    for part in parts:
+                        if "inlineData" in part:
+                            raw_b64 = part["inlineData"]["data"]
+                            mime_type = part["inlineData"].get("mimeType", "image/png")
+                            return StreamingResponse(io.BytesIO(base64.b64decode(raw_b64)), media_type=mime_type)
+            except Exception:
+                pass
+
+    # Fallback con Pollinations
+    encoded_prompt = urllib.parse.quote(full_prompt)
     API_URL = f"https://image.pollinations.ai/prompt/{encoded_prompt}?nologo=true&enhance=false&width=800&height=800&model=flux"
     
     try:
-        response = requests.get(API_URL, headers=headers)
+        response = requests.get(API_URL, headers=headers, timeout=25)
         
         if response.status_code != 200:
-            return {"error": "Pollinations API error", "details": response.text}, response.status_code
+            return {"error": "Image generation API error", "details": response.text}, response.status_code
             
         return StreamingResponse(io.BytesIO(response.content), media_type="image/jpeg")
     except Exception as e:
