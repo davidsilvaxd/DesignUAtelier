@@ -147,7 +147,7 @@ Si el usuario solicita patrones generales como puntos, rayas, texturas, o un dis
   - INCORRECTO: "black_polka_dots_pattern" (debes incluir la prenda base {shirt_name} en inglés)
 
 B) MODO ESTAMPADO LOCALIZADO / GRÁFICO INDIVIDUAL (mode=stamp):
-Si el usuario solicita un gráfico o ilustración localizada en el centro (ej: "un sol geométrico", "dibuja un gato"), debes generar únicamente el gráfico sobre fondo blanco.
+Si el usuario solicita un gráfico o ilustración localizada en el centro (ej: "un sol geométrico", "dibuja un gato"), debes generar únicamente el gráfico sobre fondo blanco estetico y agradable al usuario.
 - FORMATO EXACTO (sin bloques de código):
   ![Estampado](/generate-image?prompt={{descripcion_del_estampado_en_ingles}}&title={{titulo}}&mode=stamp)
 - El PROMPT (en INGLÉS) es EXCLUSIVAMENTE el arte/diseño del estampado, aislado en fondo blanco sólido, sin incluir la prenda ni personas.
