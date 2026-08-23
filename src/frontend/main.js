@@ -134,7 +134,7 @@ async function selectShirt() {
     updateInputState();
 
     // Mensaje de bienvenida en el chat
-    addMessage(`✓ **${shirt.name}** seleccionada. Ahora describe el estampado que quieres y lo generaré directamente sobre ella.`, 'bot');
+    addMessage(`**${shirt.name}** seleccionada. Ahora describe el estampado que quieres y lo generaré directamente sobre ella.`, 'bot');
 
     // En móvil, abrir el visor
     if (appContainer) appContainer.classList.add('viewer-open');
@@ -297,7 +297,7 @@ function addMessage(text, sender, file = null) {
 function addSystemMessage(text) {
     const msgDiv = document.createElement("div");
     msgDiv.classList.add("message", "bot", "system-message");
-    msgDiv.innerHTML = `<span class="system-msg-icon">ℹ️</span> ${text}`;
+    msgDiv.innerHTML = `<span class="system-msg-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></span> ${text}`;
     messages.appendChild(msgDiv);
     messages.scrollTop = messages.scrollHeight;
 }

@@ -276,8 +276,31 @@
 }
 
 .f-icon {
-    font-size: 32px;
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-primary);
     margin-bottom: 24px;
+    box-shadow: 0 8px 20px rgba(168, 85, 247, 0.12);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feature-card:hover .f-icon {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.3));
+    border-color: var(--accent-primary);
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 12px 25px rgba(168, 85, 247, 0.3);
+}
+
+.f-icon svg {
+    width: 26px;
+    height: 26px;
+    stroke: currentColor;
 }
 
 .feature-card h4 {

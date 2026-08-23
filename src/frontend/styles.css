@@ -1227,14 +1227,27 @@ body.atelier-mode {
 }
 
 .design-hint {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     font-size: 11px;
     color: var(--text-secondary);
     text-align: center;
     margin: 0;
-    opacity: 0.65;
+    opacity: 0.75;
     letter-spacing: 1px;
     text-transform: uppercase;
     animation: fadeInSlide 0.5s ease;
+}
+
+.design-hint svg {
+    stroke: var(--accent-primary);
+    transition: transform 0.3s ease;
+}
+
+.design-hint:hover svg {
+    transform: translateX(3px);
 }
 
 /* ---- BOTÓN CAMBIAR CAMISETA ---- */
@@ -1274,15 +1287,22 @@ body.atelier-mode {
     border: 1px solid rgba(168, 85, 247, 0.2);
     color: var(--text-secondary);
     font-size: 13px;
-    font-style: italic;
     display: flex;
     align-items: flex-start;
-    gap: 8px;
+    gap: 10px;
 }
 
 .system-msg-icon {
-    font-style: normal;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-primary);
     flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.system-msg-icon svg {
+    stroke: var(--accent-primary);
 }
 
 /* ---- INPUT LOCKEADO (sin camiseta seleccionada) ---- */
