@@ -1,5 +1,5 @@
 # pyrefly: ignore [missing-import]
-from fastapi import FastAPI, File, UploadFile, Form
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 # pyrefly: ignore [missing-import]
 from fastapi.staticfiles import StaticFiles
 # pyrefly: ignore [missing-import]
@@ -28,10 +28,8 @@ load_dotenv()
 
 client = groq.Groq(api_key=os.getenv("GROQ_API_KEY"))
 gemini_api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GEMINI") or ""
-pollinations_api_key = os.getenv("POLLINATIONS_API_KEY") or ""
 print(f"DEBUG: GROQ API KEY configured: {bool(os.getenv('GROQ_API_KEY'))}")
 print(f"DEBUG: GEMINI API KEY configured: {bool(gemini_api_key)}")
-print(f"DEBUG: POLLINATIONS API KEY starts with: {pollinations_api_key[:5] if pollinations_api_key else 'None'}")
 
 app = FastAPI()
 
@@ -319,11 +317,6 @@ async def select_shirt(session_id: str = Form(""), shirt_id: str = Form(...), sh
 
 @app.get("/generate-image")
 def generate_image(prompt: str, mode: str = "garment"):
-    import urllib.parse
-    headers = {}
-    if pollinations_api_key:
-        headers["Authorization"] = f"Bearer {pollinations_api_key}"
-
     # Capa de seguridad: sufijo diferente según el modo
     if mode == "stamp":
         # Modo estampado: solo el arte gráfico, sin prenda
@@ -352,27 +345,15 @@ def generate_image(prompt: str, mode: str = "garment"):
                             raw_b64 = part["inlineData"]["data"]
                             mime_type = part["inlineData"].get("mimeType", "image/png")
                             return StreamingResponse(io.BytesIO(base64.b64decode(raw_b64)), media_type=mime_type)
+                else:
+                    print(f"DEBUG: Gemini ({gemini_model}) HTTP {gemini_resp.status_code}: {gemini_resp.text[:200]}")
             except Exception as e:
                 print(f"DEBUG: Gemini ({gemini_model}) error: {e}")
+    else:
+        print("DEBUG: GEMINI_API_KEY no configurada")
 
-    # Fallback: Pollinations.ai con Flux
-    encoded_prompt = urllib.parse.quote(full_prompt)
-    
-    # Aplicar optimizaciones de velocidad:
-    # nologo=true quita marcas de agua.
-    # enhance=false evita reescritura de prompt para mantener el control estricto.
-    API_URL = f"https://image.pollinations.ai/prompt/{encoded_prompt}?nologo=true&enhance=false&width=800&height=800&model=flux"
-    
-    try:
-        response = requests.get(API_URL, headers=headers, timeout=25)
-        
-        # Pollinations devuelve 200 con la imagen directamente
-        if response.status_code != 200:
-            return {"error": "Image generation API error", "details": response.text}, response.status_code
-            
-        return StreamingResponse(io.BytesIO(response.content), media_type="image/jpeg")
-    except Exception as e:
-        return {"error": str(e)}, 500
+    # Ningún modelo generó imagen
+    raise HTTPException(status_code=502, detail="No se pudo generar la imagen")
 
 @app.get("/.well-known/appspecific/com.chrome.devtools.json")
 def chrome_devtools():

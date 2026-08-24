@@ -6,7 +6,7 @@
   - `api/index.py` — Vercel serverless (simplified, no session management)
 - **Frontend:** Static HTML/CSS/JS in `src/frontend/`, served via Vercel rewrites
 - **LLM:** Groq (`openai/gpt-oss-120b`)
-- **Image gen:** Google Gemini Imagen (`gemini-2.5-flash-image` / `gemini-3.1-flash-image`) with Pollinations.ai (`model=flux`) fallback
+- **Image gen:** Google Gemini Imagen (`gemini-2.5-flash-image` / `gemini-3.1-flash-image`; sin fallback externo — si falla, `/generate-image` responde HTTP 502)
 - **Auth:** Firebase Auth (Google + email/password), guest mode available
 
 ## Commands
@@ -32,7 +32,6 @@ npm test            # placeholder (no test framework configured)
 ## Image generation safety
 - `mode=garment` appends `safety_suffix` (no human, no face, ghost mannequin style)
 - `mode=stamp` appends different suffix (flat vector, no clothing, white background)
-- Pollinations URL: `https://image.pollinations.ai/prompt/{encoded}?nologo=true&enhance=false&width=800&height=800&model=flux`
 
 ## Important gotchas
 - `.env` file has live API keys and is NOT in `.gitignore` — do NOT commit
